@@ -22,11 +22,19 @@ reportChecker (x : xs)
   where
     diff = head xs - x
 
+reportCheckerE :: [Int] -> [Int] -> Bool
+reportCheckerE l [] = False
+reportCheckerE l r
+  | reportChecker (l ++ r) = True
+  | reportChecker (l ++ tail r) = True
+  | reportCheckerE (l ++ [head r]) (tail r) = True
+  | otherwise = False
+
 solve :: String -> Int
 solve input = safe_reports_count
   where
     all_reports = map (map read . words) (lines input) :: [[Int]]
-    safe_reports_count = length [() | levels <- all_reports, reportChecker levels]
+    safe_reports_count = length [() | levels <- all_reports, reportCheckerE [] levels]
 
 main :: IO ()
 main = interact $ show . solve
